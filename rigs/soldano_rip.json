@@ -1,0 +1,9 @@
+{
+  "name": "Soldano SLO-100 + Rust In Peace cab",
+  "amps": [
+    {"glob": "../models/soldano_slo100/*.nam", "size": "lite"}
+  ],
+  "cab": {"file": "../models/megadeth_rust_in_peace_cab.nam", "size": "lite"},
+  "normalize": true,
+  "input_gain_db": 0.0
+}

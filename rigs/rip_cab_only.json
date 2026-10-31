@@ -1,0 +1,8 @@
+{
+  "name": "Rust In Peace cab only",
+  "amps": [
+    {"file": "../models/megadeth_rust_in_peace_cab.nam", "size": "lite"}
+  ],
+  "cab": null,
+  "normalize": true
+}

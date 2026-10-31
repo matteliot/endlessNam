@@ -1,0 +1,10 @@
+{
+  "name": "Example: amp captures + WAV impulse response",
+  "amps": [
+    {"file": "../models/my_amp_1.nam", "name": "Clean", "size": "lite"},
+    {"file": "../models/my_amp_2.nam", "name": "Lead", "size": "lite", "gain_db": -1.0}
+  ],
+  "cab": {"file": "../models/my_cab_ir.wav", "max_taps": 1024, "normalize": true, "gain_db": 0.0},
+  "normalize": true,
+  "input_gain_db": 0.0
+}
