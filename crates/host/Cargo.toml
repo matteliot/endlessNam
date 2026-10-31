@@ -1,0 +1,14 @@
+[package]
+name = "host"
+description = "Host tools: render WAVs through a rig, generate test input, compare renders"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "endless-host"
+path = "src/main.rs"
+
+[dependencies]
+nam-engine = { path = "../nam-engine" }
+rig-builder = { path = "../rig-builder" }

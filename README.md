@@ -1,8 +1,9 @@
 # endlessNam
 
 Runs [Neural Amp Modeler](https://www.neuralampmodeler.com/the-code) amp and cab
-captures on the [Polyend Endless](https://polyend.com/endless/) pedal, using
-Polyend's [FxPatchSDK](https://github.com/polyend/FxPatchSDK).
+captures on the [Polyend Endless](https://polyend.com/endless/) pedal. It's
+written in Rust (`no_std`) and targets the patch ABI of Polyend's
+[FxPatchSDK](https://github.com/polyend/FxPatchSDK).
 
 Signal chain: `input gain → NAM amp → cab (NAM model or WAV IR) → tilt EQ → level`
 
@@ -19,18 +20,18 @@ Signal chain: `input gain → NAM amp → cab (NAM model or WAV IR) → tilt EQ 
 
 ```sh
 git clone --recursive <this repo>      # or: git submodule update --init --recursive
-brew install --cask gcc-arm-embedded   # Arm GNU toolchain (the Makefile finds it)
+rustup target add thumbv7em-none-eabihf
+rustup component add llvm-tools
 ```
 
-The Makefile also finds an unpacked toolchain in `~/opt/arm-gnu-toolchain-*/`.
-That's the fallback if the Homebrew cask can't run its installer, which happens
-on Intel Macs with an old Xcode.
+You don't need a C toolchain to build the patch. `cargo xtask test` uses a C++
+compiler (`clang++`) once, to build NAM's reference renderer.
 
 Download models into `models/` (see [models/README.md](models/README.md)), then:
 
 ```sh
-make                 # -> build/soldano_rip/soldano_rip.endl
-make deploy          # copies it to /Volumes/ENDLESS (override with ENDLESS_VOLUME=...)
+cargo xtask build              # -> target/endless/soldano_rip.endl
+cargo xtask deploy             # build + copy to /Volumes/ENDLESS (--volume DIR to override)
 ```
 
 ## Swapping amps and cabs
@@ -52,24 +53,21 @@ change the paths:
 ```
 
 ```sh
-make RIG=rigs/my_rig.json deploy
+cargo xtask deploy --rig rigs/my_rig.json
+cargo xtask info --rig rigs/my_rig.json      # what's in it, and whether every file works
 ```
 
 - **amps**: one or more NAM A2 captures. The footswitch cycles through them,
   and `normalize` level-matches them to -18 dB like the NAM plugin does. Each
-  entry takes `file` or `glob`, and optionally `name`, `gain_db` and `size`.
+  entry takes `file` or `glob` (with `*`/`?` in the file name), and optionally
+  `name`, `gain_db` and `size`.
 - **cab**: a NAM cab model (`.nam`), an impulse response (`.wav`, any sample
   rate or bit depth; it gets resampled to 48 kHz and truncated to `max_taps`
   with a fade), or `null`. Optional keys: `gain_db`, plus `normalize` for IRs.
 - The models are compiled into the `.endl`, because patches can't read files on
-  the pedal. Each rig produces its own `.endl`, and you can keep several on the
-  pedal at once.
-
-For a quick one-off build without a rig file:
-
-```sh
-python3 tools/build_rig.py --amp models/x.nam --cab models/y.wav -o build/quick/generated/rig_data.h
-```
+  the pedal. `crates/endless-patch/build.rs` converts the rig named by `$RIG`
+  into Rust statics. Each rig produces its own `.endl`, and you can keep several
+  on the pedal at once.
 
 ### What models work
 
@@ -79,34 +77,30 @@ pedal runs **Lite** (`"size": "lite"`, the default). Full needs roughly 7× the
 compute of Lite and won't keep up on the 720 MHz Cortex-M7.
 
 A1 models (classic Standard/Lite/Feather/Nano WaveNet, LSTM) aren't supported.
-`build_rig.py` rejects anything the engine can't run and tells you why.
+The rig builder rejects anything the engine can't run and tells you why.
 
 IR cost is `max_taps` multiply-adds per sample. The default of 1024 taps
-(21 ms) covers the important part of most cab IRs. Raise it only if the LED
-stays out of the red.
+(21 ms) covers the important part of most cab IRs.
 
 ## Auditioning on your computer
 
 ```sh
-make render IN=my_di_track.wav ARGS="--gain 0.6 --amp 2"   # -> build/<rig>/render_out.wav
-make test    # checks the engine against NeuralAmpModelerCore on every model in models/
+cargo xtask render my_di.wav --gain 0.6 --select 2      # -> target/render/<rig>.wav
+cargo xtask test     # checks the engine against NeuralAmpModelerCore on every model in models/
 ```
 
-`host/render.cpp` runs the same `src/rig.h` code that runs on the pedal, so what
-you hear on the computer is what the pedal plays (minus the pedal's own analog
-input/output stages).
+The host renderer runs the same `nam-engine` code as the pedal.
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `src/nam_a2.h` | Allocation-free NAM A2 WaveNet inference (matches NeuralAmpModelerCore's A2 path to ~-125 dB) |
-| `src/fir.h` | IR convolver |
-| `src/rig.h` | Signal chain: gain, amp, cab, tone, level, amp switching |
-| `src/PatchImpl.cpp` | Endless SDK glue: knobs, footswitch, LED |
-| `tools/build_rig.py` | Rig JSON + `.nam`/`.wav` → `build/<rig>/generated/rig_data.h` (stdlib-only Python) |
-| `host/` | Native renderer and test scripts |
-| `third_party/` | FxPatchSDK and NeuralAmpModelerCore (git submodules) |
+| `crates/nam-engine` | `no_std` engine: NAM A2 WaveNet (`a2.rs`, matches NeuralAmpModelerCore to ~-126 dB), IR convolver (`fir.rs`), signal chain (`rig.rs`) |
+| `crates/rig-builder` | Rig JSON + `.nam`/`.wav` loading and validation, Rust code generation |
+| `crates/endless-patch` | Pedal binary: the SDK's `PatchHeader` ABI in Rust (`abi.rs`), knobs/footswitch/LED (`main.rs`), linker script |
+| `crates/host` | `endless-host` CLI: render, info, test-signal generation, comparison |
+| `xtask` | `cargo xtask build/deploy/render/info/test` |
+| `third_party/` | FxPatchSDK (ABI and layout reference) and NeuralAmpModelerCore (test reference), as git submodules |
 
 ## Notes and limits
 
@@ -118,5 +112,5 @@ input/output stages).
 - Switching amps mutes for one block and then fades in over 10 ms. There's no
   warm-up delay, because the network state is set directly to its silence
   steady state.
-- Memory: each A2-Lite model takes about 94 KB of state. Patches get 512 KB for
-  code and data combined.
+- Memory: each A2-Lite model takes about 93 KB of state. Patches get 512 KB for
+  code and data combined, and `cargo xtask build` checks the total.

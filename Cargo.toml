@@ -1,0 +1,21 @@
+[workspace]
+resolver = "3"
+members = ["crates/nam-engine", "crates/rig-builder", "crates/endless-patch", "crates/host", "xtask"]
+# endless-patch only builds for the pedal (thumbv7em); `cargo xtask build` handles it.
+default-members = ["crates/nam-engine", "crates/rig-builder", "crates/host", "xtask"]
+
+[workspace.package]
+edition = "2024"
+version = "0.1.0"
+license = "MIT"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+debug = true
+
+[profile.dev]
+panic = "abort"
+opt-level = 1

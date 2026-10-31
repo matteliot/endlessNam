@@ -1,9 +1,7 @@
-build/
+/target/
 .DS_Store
-__pycache__/
 
 # Model/IR files are usually licensed "use but don't redistribute" (TONE3000's
 # T3K license). Keep them local; rigs reference them by path.
 models/**/*.nam
 models/**/*.wav
-host/testdata/
