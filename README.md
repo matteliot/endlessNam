@@ -1,4 +1,4 @@
-# endlessName
+# endlessNam
 
 Runs [Neural Amp Modeler](https://www.neuralampmodeler.com/the-code) amp and cab
 captures on the [Polyend Endless](https://polyend.com/endless/) pedal, using

@@ -1,4 +1,4 @@
-# endlessName: NAM amp/cab rigs for the Polyend Endless.
+# endlessNam: NAM amp/cab rigs for the Polyend Endless.
 #
 #   make                         build the default rig -> build/<rig>/<rig>.endl
 #   make RIG=rigs/other.json     build another rig
