@@ -22,6 +22,10 @@ git clone --recursive <this repo>      # or: git submodule update --init --recur
 brew install --cask gcc-arm-embedded   # Arm GNU toolchain (the Makefile finds it)
 ```
 
+The Makefile also finds an unpacked toolchain in `~/opt/arm-gnu-toolchain-*/`.
+That's the fallback if the Homebrew cask can't run its installer, which happens
+on Intel Macs with an old Xcode.
+
 Download models into `models/` (see [models/README.md](models/README.md)), then:
 
 ```sh

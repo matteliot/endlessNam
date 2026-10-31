@@ -16,12 +16,15 @@ SDK := third_party/FxPatchSDK
 NAMCORE := third_party/NeuralAmpModelerCore
 PYTHON ?= python3
 
-# Find the Arm GNU toolchain: PATH first, then the macOS installer location.
+# Find the Arm GNU toolchain: PATH first, then the macOS installer location,
+# then an unpacked copy in ~/opt/arm-gnu-toolchain-*.
 ifeq ($(origin TOOLCHAIN), undefined)
   ifneq ($(shell command -v arm-none-eabi-gcc 2>/dev/null),)
     TOOLCHAIN := arm-none-eabi-
   else
-    TOOLCHAIN := $(lastword $(sort $(wildcard /Applications/ArmGNUToolchain/*/arm-none-eabi/bin/)))arm-none-eabi-
+    TOOLCHAIN_DIR := $(lastword $(sort $(wildcard /Applications/ArmGNUToolchain/*/arm-none-eabi/bin/) \
+                                       $(wildcard $(HOME)/opt/arm-gnu-toolchain-*/bin/)))
+    TOOLCHAIN := $(TOOLCHAIN_DIR)arm-none-eabi-
   endif
 endif
 
