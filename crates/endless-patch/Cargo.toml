@@ -1,0 +1,17 @@
+[package]
+name = "endless-patch"
+description = "Polyend Endless patch: NAM amp + cab rig"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "endless-patch"
+test = false
+bench = false
+
+[dependencies]
+nam-engine = { path = "../nam-engine" }
+
+[build-dependencies]
+rig-builder = { path = "../rig-builder" }

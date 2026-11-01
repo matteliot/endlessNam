@@ -1,0 +1,9 @@
+[package]
+name = "rig-builder"
+description = "Load rig files, NAM A2 models and WAV IRs; emit Rust source for the patch"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde_json = "1"

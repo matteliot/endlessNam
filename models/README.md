@@ -13,4 +13,4 @@ The default rig (`rigs/soldano_rip.json`) expects:
 
 Only **NAM A2** models work: A2-Lite runs on the pedal, and A2-Full is too heavy
 for real time. A1 models (Standard/Lite/Feather/Nano WaveNet, LSTM) aren't
-supported. `tools/build_rig.py` will tell you if a file won't work.
+supported. `cargo xtask info --rig <rig>` (or any build) tells you if a file won't work.

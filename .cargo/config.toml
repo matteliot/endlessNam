@@ -1,0 +1,6 @@
+[alias]
+xtask = "run -q -p xtask --release --"
+
+# The pedal target's default FPU (VFPv4-D16, single precision) is a subset of
+# the Endless Cortex-M7's FPv5-SP-D16 that the SDK builds for, and it emits no
+# double-precision instructions.

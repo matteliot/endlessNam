@@ -1,0 +1,9 @@
+[package]
+name = "nam-engine"
+description = "Allocation-free NAM A2 inference, IR convolution and amp/cab chain (no_std)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+libm = "0.2"

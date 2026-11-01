@@ -1,7 +1,10 @@
 {
   "name": "Soldano SLO-100 + Rust In Peace cab",
   "amps": [
-    {"glob": "../models/soldano_slo100/*.nam", "size": "lite"}
+    {"file": "../models/soldano_slo100/Soldano high gain.nam", "name": "High Gain"},
+    {"file": "../models/soldano_slo100/Soldano Riff Machine.nam", "name": "Riff Machine"},
+    {"file": "../models/soldano_slo100/Soldano death.nam", "name": "Death"},
+    {"file": "../models/soldano_slo100/Soldano Progressive.nam", "name": "Progressive"}
   ],
   "cab": {"file": "../models/megadeth_rust_in_peace_cab.nam", "size": "lite"},
   "normalize": true,
