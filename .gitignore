@@ -5,3 +5,6 @@
 # T3K license). Keep them local; rigs reference them by path.
 models/**/*.nam
 models/**/*.wav
+
+# Downloads (installers, model zips)
+assets/
